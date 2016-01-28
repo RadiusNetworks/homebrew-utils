@@ -1,7 +1,7 @@
 require "formula"
 
 class Rbcom < Formula
-  homepage 'https://github.com/RadiusNetworks/ble112-usb-comm'
+  homepage 'https://github.com/RadiusNetworks/rbcom'
   head 'git@github.com:RadiusNetworks/ble112-usb-comm.git'
   url 'https://s3.amazonaws.com/downloads.radiusnetworks.com/13359be6-c7cd-4a61-829f-44196e980ae8/rbcom-1.3.3.tar.gz'
 
