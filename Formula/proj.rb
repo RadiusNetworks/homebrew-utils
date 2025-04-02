@@ -1,41 +1,52 @@
-require 'formula'
-
 class Proj < Formula
-  desc 'Cartographic Projections Library'
-  homepage 'https://proj4.org/'
-  url 'https://download.osgeo.org/proj/proj-6.3.1.tar.gz'
-  sha256 '6de0112778438dcae30fcc6942dee472ce31399b9e5a2b67e8642529868c86f8'
+  desc "Cartographic Projections Library"
+  homepage "https://proj.org/"
+  url "https://github.com/OSGeo/PROJ/releases/download/8.2.1/proj-8.2.1.tar.gz"
+  sha256 "76ed3d0c3a348a6693dfae535e5658bbfd47f71cb7ff7eb96d9f12f7e068b1cf"
+  license "MIT"
 
-  head do
-    url 'https://github.com/OSGeo/proj.4.git'
-    depends_on 'autoconf' => :build
-    depends_on 'automake' => :build
-    depends_on 'libtool' => :build
+  bottle do
+    sha256 arm64_monterey: "62cb9712728f6564c3a16dbc0ff0039018190140006a116d859f33d74b25ae97"
+    sha256 arm64_big_sur:  "14de62fb7c0938043e569eeb2bfe0a5f9bc210a1e01cc0fdc6cd5bd1a39fd582"
+    sha256 monterey:       "6e01afdab9239b4acade4884b58b0e7e27621caecdfb8d8f21edc7d77f8c0d42"
+    sha256 big_sur:        "bf91fd3fb71763f796699e3cf8dcfc477c31cc6f9fd579fec6a489d82c7fbcf0"
+    sha256 catalina:       "f6af4ae5830d82a9c9c4aa6f36d91a8949bd025b46a3d778c3ad8a7cdf63c854"
+    sha256 x86_64_linux:   "402f0a4d03f0fc03f8ee6faa81dd13bf7e207d3df58de2790c9e51e950ac1725"
   end
 
-  depends_on 'pkg-config' => :build
+  head do
+    url "https://github.com/OSGeo/proj.git"
+    depends_on "autoconf" => :build
+    depends_on "automake" => :build
+    depends_on "libtool" => :build
+  end
 
-  conflicts_with 'blast', because: 'both install a `libproj.a` library'
+  depends_on "pkg-config" => :build
+  depends_on "libtiff"
+
+  uses_from_macos "curl"
+  uses_from_macos "sqlite"
+
+  conflicts_with "blast", because: "both install a `libproj.a` library"
 
   skip_clean :la
 
   # The datum grid files are required to support datum shifting
-  resource 'datumgrid' do
-    url 'https://download.osgeo.org/proj/proj-datumgrid-1.8.zip'
-    sha256 'b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e'
+  resource "datumgrid" do
+    url "https://download.osgeo.org/proj/proj-datumgrid-1.8.zip"
+    sha256 "b9838ae7e5f27ee732fb0bfed618f85b36e8bb56d7afb287d506338e9f33861e"
   end
 
   def install
-    (buildpath / 'nad').install resource('datumgrid')
-
-    system './autogen.sh' if build.head?
-    system './configure', '--disable-dependency-tracking',
-           "--prefix=#{prefix}"
-    system 'make', 'install'
+    (buildpath/"nad").install resource("datumgrid")
+    system "./autogen.sh" if build.head?
+    system "./configure", "--disable-dependency-tracking",
+                          "--prefix=#{prefix}"
+    system "make", "install"
   end
 
   test do
-    (testpath / 'test').write <<~EOS
+    (testpath/"test").write <<~EOS
       45d15n 71d07w Boston, United States
       40d40n 73d58w New York, United States
       48d51n 2d20e Paris, France
